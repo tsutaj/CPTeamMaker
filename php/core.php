@@ -5,7 +5,7 @@ require_once "./utils.php";
 
 // この辺は後でパラメータを受け取るように変えたいね
 const NUM_OF_TEAM_MEMBER = 3;
-const NUM_OF_ANNEALING_STEP = 100 * 100;
+const NUM_OF_ANNEALING_STEP = 100 * 100 * 2;
 const START_TEMP = 1000000000.0;
 const END_TEMP = 1000.0;
 const POINT_DIV = 1000.0;
