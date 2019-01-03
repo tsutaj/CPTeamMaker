@@ -15,6 +15,7 @@
 #include <queue>
 #include <algorithm>
 #include <random>
+#include <tuple>
 using namespace std;
 
 // [lb, ub] の閉区間内の値をランダムに返す構造体
@@ -145,6 +146,8 @@ int main(int argc, char** argv) {
     vector<UserInfo> users;
     char name[128], affil[128]; long long int rating;
     while( fscanf(fp, " %s %lld %s", name, &rating, affil) != EOF ) {
+        // 名前の先頭が '#' ならスキップ
+        if(name[0] == '#') continue;
         fprintf(stderr, "# debug: [%s] [%lld] [%s]\n", name, rating, affil);
         users.emplace_back(string(name), rating, affil);
     }

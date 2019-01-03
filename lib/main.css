@@ -1,0 +1,44 @@
+#main-container {
+    padding-top: 70px;
+}
+
+h1, h2, h3 {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+h3 {
+    margin-top: 25px;
+}
+
+/* 表の一番上は中央揃えで統一 */
+th {
+    text-align: center;
+}
+
+/* 表の各セルをスリムにするための指定 */
+.table .slim-cell {
+    vertical-align: middle;
+    padding: 0;
+}
+
+.slim-form-group {
+    margin: 0;
+}
+
+.slim-form-check {
+    text-align: center;
+    margin: 0;
+}
+
+.custom-control-label  {
+    vertical-align: top;
+}
+
+/* 「詳しい使い方...」 */
+.how-to-use-detail {
+    margin-bottom: 15px;
+}
+
+.how-to-use-detail .card-header {
+    padding: .5rem 1.25rem;
+}

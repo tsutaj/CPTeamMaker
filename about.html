@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Competitive Programming Team Maker</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="競技プログラミング">
+    <meta name="description" content="競技プログラミングのチーム編成をサポートする Web アプリケーションです。">
+    <meta name="author" content="tsutaj">
+    <meta http-equiv="content-language" content="ja">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- css -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="./lib/main.css">
+
+    <!-- fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+    <!-- javascript -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="./js/detail_anime.js"></script>
+    <script type="text/javascript" src="./js/table_operation.js"></script>
+    <script type="text/javascript" src="./js/import_csv.js"></script>
+
+    <!-- mathjax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
+    </script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <meta http-equiv="X-UA-Compatible" CONTENT="IE=EmulateIE7" />
+  </head>
+  <body>
+    <!-- main-container -->
+    <div class="container" id="main-container">
+      <!-- navigation -->
+      <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+        <a class="navbar-brand" href="./index.php">TeamMaker</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="./index.php">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="./about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./contact.html">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- navigation end -->
+
+      <h1>About</h1>
+
+      <div class="alert alert-info">
+        <span class="fa fa-info-circle"></span> このアプリケーションは beta 版です。表記上の不備やアルゴリズムの改善案などがございましたら <a href="./contact.html">tsutaj までご連絡</a>ください。
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4 class="mb-0">このアプリケーションの目的</h4>
+        </div>
+        <div class="card-body">
+          <p>このアプリケーションの目的は、良いチーム分けをする、つまり良い割当を考えることです。</p>
+          <p>チーム分けの対象となる人が $K$ 人おり、それぞれ $1, 2, 3, \ldots, K$ と番号付けられているとします。全員についてレートがついているものとし、$i$ $(1 \leq i \leq K)$ 番目の人のレーティング値が $x_i$ であるとします。</p>
+          <p>この $K$ 人を $N$ グループに分けることを考えます。$i$ $(1 \leq i \leq N)$ 番目のグループは $M_i$ 人で構成されるものとし、$i$ 番目のグループの $j$ $(1 \leq j \leq M_i)$ 番目のメンバーの番号が $a_{i, j}$ であるとします。以下、$\left\{ a \right\}$ を「割当」と呼ぶことにします。</p>
+          <p>冒頭で述べた「良い割当」とは、次の条件を満たすような割当を指しています。</p>
+          <ul class="mb-0">
+            <li>チーム間の実力差が小さい</li>
+            <li>所属の重複が少ない (できるだけ所属が異なる参加者同士でチームを組む)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4 class="mb-0">チーム分けの評価指標</h4>
+        </div>
+        <div class="card-body">
+          <p>ある割当 $\left\{ a \right\}$ に対し、それがどれくらい良いものであるか評価する方法について述べます。</p>
+          <h5>チームに対する評価指標</h5>
+          <p>$i$ 番目のチームに対する評価指標 $s_i$ は、<span style="font-weight: bold;">そのチームに属するメンバーのレーティング値の二乗和平均</span>です。より詳細には、以下の式で表されます。</p>
+          <p style="text-align:center;">$s_i = \frac{\sum_{j=1}^{m_i} \left( x_{a_{i, j}} \right)^2}{m_i}$</p>
+          <p>単純な和ではなく二乗和を採用しているのは、レートが高いメンバーの影響をより大きくするためです。例えば水色コーダーが 3 人いるチームと、赤コーダーが 1 人と緑コーダーが 2 人いるチームはレートの和の意味では似通っていますが、実際の実力差は大きいでしょう。このような事情を解消することを目的として二乗和にしています。</p>
+          <h5>割当全体に対する評価指標</h5>
+          <p>評価指標は、<span style="font-weight: bold;">チームに対する評価指標の分散</span> $V$ をベースにしています。分散は以下の式で表されます。</p>
+          <p style="text-align:center;">$V = \frac{1}{N} \sum_{i=1}^{N} s_i^2 - \left( \frac{1}{N} \sum_{i=1}^{N} s_i \right)^2$</p>
+          <p>また、$i$ 番目のチームにおける所属の重複数 $d_i$ を以下のように定義します。さらに、$D = \sum_{i=1}^{N} d_i$ とします。</p>
+          <p style="text-align:center;">$d_i = \left| \left\{ (x, y) \mid 1 \leq x \lt y \leq M_i, a_{i, x} \text{の所属} = a_{i, y} \text{の所属} \right\} \right|$ </p>
+          <p>これらを用いて、割当全体に対する評価指標 $P$ を以下のように定義します。</p>
+          <p style="text-align:center;">$P = V (D + 1)$</p>
+          <p class="mb-0">良いチーム分けにおいて、分散は小さいほうが良いうえ重複数も小さいほうが良いため、$P$ をできるだけ小さくすることが求められます。</p>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4 class="mb-0">評価指標の最適化</h4>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">割当全体に対する評価指標 $P$ を最適化する、すなわち $P$ を最小化するために、焼きなまし法 (Simulated Annealing) を使用しています。はじめに適当な割当を考え、ある 2 人をランダムに選び swap することで近傍を得て探索しています。</p>
+        </div>
+      </div>
+    </div>
+    <!-- main-container end -->
+
+    <!-- bootstrap (head で読み込もうとしたらダメだった、ふしぎ) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <!-- bootstrap end -->
+  </body>
+</html>
