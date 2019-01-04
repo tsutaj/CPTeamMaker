@@ -188,6 +188,8 @@ function getAssignments($users) {
     foreach($best_teams as &$team) {
         usort($team, "cmpUserInfo");
     }
+    // 全体をソート
+    usort($best_teams, "cmpTeamInfo");
     return $best_teams;
 }
 

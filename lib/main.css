@@ -42,3 +42,35 @@ th {
 .how-to-use-detail .card-header {
     padding: .5rem 1.25rem;
 }
+
+/* カード内はどこをクリックしても開閉可能にする */
+/* ref: https://cccabinet.jpn.org/bootstrap4/components/collapse */
+#edit-table-card .card.how-to-use-detail .card-header a[data-toggle="collapse"] {
+  display: block;
+  padding: .75rem 1.25rem;
+  margin: -.75rem -1.25rem;
+}
+
+#edit-table-card .card.how-to-use-detail .card-header a[data-toggle="collapse"]:link,
+#edit-table-card .card.how-to-use-detail .card-header a[data-toggle="collapse"]:hover,
+#edit-table-card .card.how-to-use-detail .card-header a[data-toggle="collapse"]:active,
+#edit-table-card .card.how-to-use-detail .card-header a[data-toggle="collapse"]:focus {
+    text-decoration: none;
+}
+
+#csv-card .card.how-to-use-detail .card-header a[data-toggle="collapse"] {
+  display: block;
+  padding: .75rem 1.25rem;
+  margin: -.75rem -1.25rem;
+}
+
+#csv-card .card.how-to-use-detail .card-header a[data-toggle="collapse"]:link,
+#csv-card .card.how-to-use-detail .card-header a[data-toggle="collapse"]:hover,
+#csv-card .card.how-to-use-detail .card-header a[data-toggle="collapse"]:active,
+#csv-card .card.how-to-use-detail .card-header a[data-toggle="collapse"]:focus {
+    text-decoration: none;
+}
+
+.atcoder_user_name {
+    font-family: 'Lato', sans-serif;
+}

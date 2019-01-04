@@ -36,7 +36,8 @@ function h($str) {
 
         <!-- fonts -->
         <link href="https://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet"> 
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
         <!-- javascript -->
@@ -246,7 +247,7 @@ function h($str) {
                                     // ハンドルネームとユーザー ID
                                     echo($team[$i]->handle);
                                     if($team[$i]->user_name !== "") {
-                                        echo(" (<span style=font-weight:bold;color:" . $color_code . ";>" . $team[$i]->user_name . "</span>)");
+                                        echo(" (<span class=\"atcoder_user_name\" style=\"font-weight:bold;color:" . $color_code . ";\">" . $team[$i]->user_name . "</span>)");
                                     }
                                     echo("<br />");
                                     // 所属

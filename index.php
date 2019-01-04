@@ -98,21 +98,25 @@ $token = $_SESSION['token'];
             <!-- import CSV file -->
             <h3><span class="fas fa-file-csv"></span> CSV ファイルをインポート</h3>
 
-            <div class="card how-to-use-detail">
-                <div class="card-header" id="heading-csv" data-toggle="collapse" data-target="#collapse-csv" aria-expanded="true" aria-controls="collapse-csv">
-                    <span class="fa fa-info-circle"></span> 詳しい使い方...
-                    <span class="fas fa-chevron-down float-right"></span>
-                </div>
-                <div id="collapse-csv" class="collapse" aria-labelledby="heading-csv">
-                    <div class="card-body">
-                        以下の例で示されるような、「ハンドルネーム, AtCoder ID, 所属」がカンマ区切りで書かれている CSV ファイルを予め用意してください。下の「ファイルを選択」ボタンで CSV ファイルを選択し、「CSV をインポート」ボタンでその内容を表に反映させます。
+            <div id="csv-card">
+                <div class="card how-to-use-detail">
+                    <div class="card-header" id="heading-csv">
+                        <a data-toggle="collapse" class="text-body" href="#collapse-csv" aria-expanded=false" aria-controls="collapse-csv">
+                            <span class="fa fa-info-circle"></span> 詳しい使い方...
+                            <span class="fas fa-chevron-down float-right"></span>
+                        </a>
+                    </div>
+                    <div id="collapse-csv" class="collapse" aria-labelledby="headmargin:0ing-csv">
+                        <div class="card-body">
+                            以下の例で示されるような、「ハンドルネーム, AtCoder ID, 所属」がカンマ区切りで書かれている CSV ファイルを予め用意してください。下の「ファイルを選択」ボタンで CSV ファイルを選択し、「CSV をインポート」ボタンでその内容を表に反映させます。
 
-                        <div class="card" style="margin:10px 10px 0 10px;">
-                            <div class="card-body">
-                                <h5 class="card-title">CSV ファイルの例</h5>
-                                <pre style="margin:0;"><code>tsutaj,Tsuta_J,four-t
+                            <div class="card" style="margin:10px 10px 0 10px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">CSV ファイルの例</h5>
+                                    <pre style="margin:0;"><code>tsutaj,Tsuta_J,four-t
 monkukui,monkukui,ragan
 waku,wakuwinmail,Megido</code></pre>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -145,19 +149,23 @@ waku,wakuwinmail,Megido</code></pre>
             
             <!-- text input forms -->
             <h3><span class="fas fa-pencil-alt"></span> テーブルを直接編集</h3>
-            <div class="card how-to-use-detail">
-                <div class="card-header" id="heading-edit-table" data-toggle="collapse" data-target="#collapse-edit-table" aria-expanded="true" aria-controls="collapse-edit-table">
-                    <span class="fa fa-info-circle"></span> 詳しい使い方...
-                    <span class="fas fa-chevron-down float-right"></span>
-                </div>
-                <div id="collapse-edit-table" class="collapse" aria-labelledby="heading-edit-table">
-                    <div class="card-body">
-                        「ハンドルネーム, AtCoder ID, 所属」を下の表に書いてください。
-                        <ul class="mb-0">
-                            <li>AtCoder ID は省略可能です</li>
-                            <li>所属になにも記載しなかった場合、無所属として扱われます。無所属同士の重複については考慮されません</li>
-                            <li>そのユーザーをチーム分けで使用したくない場合は、"Take" のチェックを無効にします。</li>
-                        </ul>
+            <div id="edit-table-card">
+                <div class="card how-to-use-detail">
+                    <div class="card-header" id="heading-edit-table">
+                        <a data-toggle="collapse" class="text-body" href="#collapse-edit-table" aria-expanded="false" aria-controls="collapse-edit-table">
+                            <span class="fa fa-info-circle"></span> 詳しい使い方...
+                            <span class="fas fa-chevron-down float-right"></span>
+                        </a>
+                    </div>
+                    <div id="collapse-edit-table" class="collapse" aria-labelledby="heading-edit-table">
+                        <div class="card-body">
+                            「ハンドルネーム, AtCoder ID, 所属」を下の表に書いてください。
+                            <ul class="mb-0">
+                                <li>AtCoder ID は省略可能です</li>
+                                <li>所属になにも記載しなかった場合、無所属として扱われます。無所属同士の重複については考慮されません</li>
+                                <li>そのユーザーをチーム分けで使用したくない場合は、"Take" のチェックを無効にします。</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -222,13 +230,13 @@ EOT;
                     </script>
                     <tfoot>
                         <tr>
-                            <td colspan="4">
-                                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                                    <div class="btn-group mr-2" role="group" aria-label="Group about row operation">
+                            <td colspan="4" class="p-0">
+                                <div class="btn-toolbar mt-2" role="toolbar" aria-label="Toolbar with button groups">
+                                    <div class="btn-group mb-2 mr-2" role="group" aria-label="Group about row operation">
                                         <button id="add_row" class="btn btn-secondary" type="button">行を追加</button>
                                         <button id="del_row" class="btn btn-secondary" type="button">行を削除</button>
                                     </div>
-                                    <div class="btn-group" role="group" aria-label="Group about all selection">
+                                    <div class="btn-group mb-2" role="group" aria-label="Group about all selection">
                                         <button id="take_all" class="btn btn-secondary" type="button">全て選択</button>
                                         <button id="remove_all" class="btn btn-secondary" type="button">全て解除</button>
                                     </div>

@@ -42,4 +42,21 @@ function cmpUserAffil($a, $b) {
     return 0;
 }
 
+// チーム分け全体のソートに使用
+function cmpTeamInfo($a, $b) {
+    $sz = min(count($a), count($b));
+    for($i=0; $i<$sz; $i++) {
+        if($a[$i]->rating != $b[$i]->rating) {
+            return ($a[$i]->rating < $b[$i]->rating) ? 1 : -1;
+        }
+        if($a[$i]->handle != $b[$i]->handle) {
+            return ($a[$i]->handle < $b[$i]->handle) ? -1 : 1;
+        }
+    }
+    if(count($a) != count($b)) {
+        return (count($a) < count($b)) ? -1 : 1;
+    }
+    else return 0;
+}
+
 ?>
