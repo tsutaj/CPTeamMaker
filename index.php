@@ -159,12 +159,15 @@ waku,wakuwinmail,Megido</code></pre>
                     </div>
                     <div id="collapse-edit-table" class="collapse" aria-labelledby="heading-edit-table">
                         <div class="card-body">
-                            「ハンドルネーム, AtCoder ID, 所属」を下の表に書いてください。
-                            <ul class="mb-0">
+                            <p>「ハンドルネーム, Team ID, AtCoder ID, 所属」を下の表に書いてください。<p>
+                            <ul>
+                                <li>Team ID は、部分的にチームが決定している際に使用します。同一の Team ID が入力された人は、チーム分けにおいても必ず同一のチームになります。同一の Team ID を大量に入力した場合など、不正な入力である場合はチーム分けが失敗しますのでご注意ください。</li>
                                 <li>AtCoder ID は省略可能です</li>
                                 <li>所属になにも記載しなかった場合、無所属として扱われます。無所属同士の重複については考慮されません</li>
                                 <li>そのユーザーをチーム分けで使用したくない場合は、"Take" のチェックを無効にします。</li>
                             </ul>
+                            <p>行の追加・削除は下にあるボタンで行えます。</p>
+                            <p class="mb-1">特定の所属について全てチェックを入れる / 外す処理も下にあるボタンで行えます。完全一致 (ただし case-insensitive) で判定しています。</p>
                         </div>
                     </div>
                 </div>
@@ -174,6 +177,7 @@ waku,wakuwinmail,Megido</code></pre>
                     <thead class="thead-light">
                         <tr>
                             <th scope="col">Take</th>
+                            <th scope="col">Team ID</th>
                             <th scope="col">Handle</th>
                             <th scope="col">AtCoder ID</th>
                             <th scope="col">Affiliation</th>
@@ -186,12 +190,15 @@ waku,wakuwinmail,Megido</code></pre>
                             $row_length = count($csv_array);
                             for($i=0; $i<count($csv_array); $i++) {
                                 $row = $csv_array[$i];
-                                echo("<tr>");
-                                echo("<td class=\"slim-cell\"><div class=\"custom-control custom-checkbox slim-form-check\"><input type=\"checkbox\" class=\"custom-control-input\" name=\"take_user[{$i}]\" checked=\"checked\" id=\"take-user-{$i}\"><label class=\"custom-control-label\" for=\"take-user-{$i}\"></label></div></td>");
-                                echo("<td class=\"slim-cell\"><div class=\"form-group slim-form-group\"><input type=\"text\" class=\"form-control\" name=\"handle[{$i}]\" value=\"{$row[0]}\"></div></td>");
-                                echo("<td class=\"slim-cell\"><div class=\"form-group slim-form-group\"><input type=\"text\" class=\"form-control\" name=\"user_id[{$i}]\" value=\"{$row[1]}\"></div></td>");
-                                echo("<td class=\"slim-cell\"><div class=\"form-group slim-form-group\"><input type=\"text\" class=\"form-control\" name=\"affiliation[{$i}]\" value=\"{$row[2]}\"></div></td>");
-                                echo("</tr>");
+                                echo <<<EOT
+<tr>
+    <td class="slim-cell"><div class="custom-control custom-checkbox slim-form-check"><input type="checkbox" class="custom-control-input" name="take_user[{$i}]" checked="checked" id="take-user-{$i}"><label class="custom-control-label" for="take-user-{$i}"></label></div></td>
+    <td class="slim-cell col-sm-1"><div class="form-group slim-form-group"><input type="text" class="form-control" name="team_id[{$i}]" value=""></div></td>
+    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="handle[{$i}]" value="{$row[0]}"></div></td>
+    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="user_id[{$i}]" value="{$row[1]}"></div></td>
+    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="affiliation[{$i}]" id="affiliation-user-{$i}" value="{$row[2]}"></div></td>
+</tr>
+EOT;
                             }
                         }
                         else {
@@ -202,6 +209,11 @@ waku,wakuwinmail,Megido</code></pre>
         <div class="custom-control custom-checkbox slim-form-check">
             <input type="checkbox" class="custom-control-input" name="take_user[0]" checked="checked" id="take-user-0">
             <label class="custom-control-label" for="take-user-0"></label>
+        </div>
+    </td>
+    <td class="slim-cell col-sm-1">
+        <div class="form-group slim-form-group">
+            <input type="text" class="form-control" name="team_id[0]">
         </div>
     </td>
     <td class="slim-cell">
@@ -216,7 +228,7 @@ waku,wakuwinmail,Megido</code></pre>
     </td>
     <td class="slim-cell">
         <div class="form-group slim-form-group">
-            <input type="text" class="form-control" name="affiliation[0]" placeholder="Mitakihara Junior High School">
+            <input type="text" class="form-control" name="affiliation[0]" id="affiliation-user-0" placeholder="Mitakihara Junior High School">
         </div>
     </td>
 </tr>
@@ -230,7 +242,7 @@ EOT;
                     </script>
                     <tfoot>
                         <tr>
-                            <td colspan="4" class="p-0">
+                            <td colspan="5" class="p-0" style="border-style: none;">
                                 <div class="btn-toolbar mt-2" role="toolbar" aria-label="Toolbar with button groups">
                                     <div class="btn-group mb-2 mr-2" role="group" aria-label="Group about row operation">
                                         <button id="add_row" class="btn btn-secondary" type="button">行を追加</button>
@@ -239,6 +251,19 @@ EOT;
                                     <div class="btn-group mb-2" role="group" aria-label="Group about all selection">
                                         <button id="take_all" class="btn btn-secondary" type="button">全て選択</button>
                                         <button id="remove_all" class="btn btn-secondary" type="button">全て解除</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="p-0" style="border-style: none;">
+                                <div>
+                                    所属が 
+                                    <input type="text" id="target_affil" class="form-control col-sm-3" style="display: inline;">
+                                     であるユーザーに対して
+                                    <div class="btn-group mb-2" role="group" aria-label="Group about selection by affiliation">
+                                        <button id="check_by_affil"   class="btn btn-secondary" type="button">全てチェック</button>
+                                        <button id="uncheck_by_affil" class="btn btn-secondary" type="button">全てチェックを外す</button>
                                     </div>
                                 </div>
                             </td>

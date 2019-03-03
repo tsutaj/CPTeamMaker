@@ -5,18 +5,23 @@ require_once "./utils.php";
 
 // この辺は後でパラメータを受け取るように変えたいね
 const NUM_OF_TEAM_MEMBER = 3;
-const NUM_OF_ANNEALING_STEP = 100 * 100 * 2;
-const START_TEMP = 1000000000.0;
-const END_TEMP = 1000.0;
+const NUM_OF_ANNEALING_STEP = 300000;
+const START_TEMP = 70.0;
+// const END_TEMP = 0.0;
+const TEMP_COEFF = 0.90;
 const POINT_DIV = 1000.0;
+const DOUBLE_WEIGHT = 5.0;
 
 // 所属なし (かぶってもよい文字列は？)
 const NONE_AFFIL = "";
 
+const MEMBER_EMPTY = 101;
+const INVALID_TEAM_ID_ASSIGNMENT = 102;
+
 // 分散を計算
 function calculateVariance($sum_square, $sum_linear, $num_of_teams) {
-    $lhs = $sum_square / $num_of_teams;
-    $rhs = ($sum_linear / $num_of_teams) ** 2;
+    $lhs = 1.0 * $sum_square / $num_of_teams;
+    $rhs = 1.0 * ($sum_linear / $num_of_teams) ** 2;
     return $lhs - $rhs;
 }
 
@@ -31,7 +36,7 @@ function calculatePoint($sum_square, $sum_linear, $sum_of_dbl, $num_of_teams) {
 // 内部でソートするので参照にするとこわれる、注意
 // 点数のキーになるのは二乗和平均
 function evaluateTeam($team) {
-    $res_square = 0;
+    $res_square = 0.0;
     $num_of_members = count($team);
 
     foreach($team as $member) {
@@ -45,8 +50,9 @@ function evaluateTeam($team) {
         if($last_affil == $team[$i]->affiliation) $num_of_dbl++;
         $last_affil = $team[$i]->affiliation;
     }
+
     // 平均を取るのと、値が大きくなりがちなので PONIT_DIV で割る
-    $res_square /= $num_of_members;
+    $res_square /= 1.0 * $num_of_members;
     $res_square /= POINT_DIV;
     return array($res_square, $num_of_dbl);
 }
@@ -55,7 +61,7 @@ function evaluateTeam($team) {
 // (チーム得点二乗和, 線形和, かぶった数, 二乗配列, 線形配列, かぶった数配列) を返す
 // 内容は特に変えないので参照で良いはず
 function evaluateWhole(&$teams) {
-    $sum_linear = $sum_square = $sum_of_dbl = 0;
+    $sum_linear = $sum_square = $sum_of_dbl = 0.0;
     $vec_linear = $vec_square = $vec_of_dbl = array();
 
     foreach($teams as &$team) {
@@ -74,35 +80,102 @@ function evaluateWhole(&$teams) {
 // ユーザーの構造体配列から最良のチーム分けを得る
 function getAssignments($users) {
     $num_of_users = count($users);
-    if($num_of_users == 0) return array();
+    if($num_of_users == 0) return MEMBER_EMPTY;
     
     $div = intdiv($num_of_users, NUM_OF_TEAM_MEMBER);
     $mod = $num_of_users % NUM_OF_TEAM_MEMBER;
 
-    $current_idx = 0;
     $initial_teams = array();
     $idx_row = array(); $idx_col = array();
 
+    // 部分的にチームが決定している人と、どこでもいい人を別々に管理
+    $partially_determined_users = array();
+    $free_users = array();
+    $free_idx = 0;
+
+    // 各 team_id に対して、その id を持っている人の数を数える
+    $cnt_team_id = array();
+    // 各 team id に対して、id を整数に振り直す
+    $num_team_id = array();
+    $idx_team_id = 0;
+    foreach($users as $user) {
+        if($user->team_id === "") continue;
+        if(array_key_exists($user->team_id, $cnt_team_id)) {
+            $cnt_team_id[$user->team_id]++;
+        }
+        else {
+            $cnt_team_id[$user->team_id] = 1;
+        }
+    }
+
+    // その team_id を持つ人が 1 人しかいないならば実質 free_users
+    // そうでなければ partially_determined_users
+    foreach($users as &$user) {
+        if($user->team_id === "") {
+            array_push($free_users, $user);
+        }
+        else if($cnt_team_id[$user->team_id] == 1) {
+            $user->team_id = "";
+            array_push($free_users, $user);
+        }
+        else {
+            if(array_key_exists($user->team_id, $num_team_id)) {
+                $idx = $num_team_id[$user->team_id];
+                array_push($partially_determined_users[$idx], $user);
+            }
+            else {
+                $idx = $num_team_id[$user->team_id] = $idx_team_id++;
+                array_push($partially_determined_users, array());
+                array_push($partially_determined_users[$idx], $user);
+            }
+        }
+    }
+
     // 余りが商を上回る場合はもう 1 チーム作る
     if($div < $mod) {
+        if(count($partially_determined_users) > $div + 1) {
+            return INVALID_TEAM_ID_ASSIGNMENT;
+        }
+        
         for($i=0; $i<=$div; $i++) {
             array_push($initial_teams, array());
             $lim = ($i < $div ? NUM_OF_TEAM_MEMBER : $mod);
+            if($i < count($partially_determined_users) and count($partially_determined_users[$i]) > $lim) {
+                return INVALID_TEAM_ID_ASSIGNMENT;
+            }
             for($j=0; $j<$lim; $j++) {
                 array_push($idx_row, $i);
                 array_push($idx_col, $j);
-                array_push($initial_teams[$i], $users[$current_idx++]);
+                if($i < count($partially_determined_users) and $j < count($partially_determined_users[$i])) {
+                    array_push($initial_teams[$i], $partially_determined_users[$i][$j]);
+                }
+                else {
+                    array_push($initial_teams[$i], $free_users[$free_idx++]);
+                }
             }
         }
     }
     // 上回らない場合は既存のチームに 1 人追加する
     else {
+        if(count($partially_determined_users) > $div) {
+            return INVALID_TEAM_ID_ASSIGNMENT;
+        }
+        
         for($i=0; $i<$div; $i++) {
             array_push($initial_teams, array());
-            for($j=0; $j<NUM_OF_TEAM_MEMBER + ($i < $mod); $j++) {
+            $lim = NUM_OF_TEAM_MEMBER + ($i < $mod);
+            if($i < count($partially_determined_users) and count($partially_determined_users[$i]) > $lim) {
+                return INVALID_TEAM_ID_ASSIGNMENT;
+            }
+            for($j=0; $j<$lim; $j++) {
                 array_push($idx_row, $i);
                 array_push($idx_col, $j);
-                array_push($initial_teams[$i], $users[$current_idx++]);
+                if($i < count($partially_determined_users) and $j < count($partially_determined_users[$i])) {
+                    array_push($initial_teams[$i], $partially_determined_users[$i][$j]);
+                }
+                else {
+                    array_push($initial_teams[$i], $free_users[$free_idx++]);
+                }
             }
         }
     }
@@ -119,12 +192,30 @@ function getAssignments($users) {
     // (二乗和, 線形和, かぶった数, チーム数) が必要
     $current_score = calculatePoint($sum_square, $sum_linear, $sum_of_dbl, $num_of_teams);
     $best_score = $current_score;
+    $best_sum_of_dbl = $sum_of_dbl;
 
+    $temp = START_TEMP;
     for($step=0; $step<NUM_OF_ANNEALING_STEP; $step++) {
         // 異なるチーム間でメンバーを入れ替え
         $u = random_int(0, $num_of_users - 1);
         $v = random_int(0, $num_of_users - 1);
         if($idx_row[$u] == $idx_row[$v]) continue;
+
+        // チーム内に、team_id が同じメンバーが存在するならダメ
+        $exist_same_team_id = false;
+        for($i=0; $i<count($current_teams[$idx_row[$u]]); $i++) {
+            if($i == $idx_col[$u]) continue;
+            $id_a = $current_teams[$idx_row[$u]][$idx_col[$u]]->team_id;
+            $id_b = $current_teams[$idx_row[$u]][$i          ]->team_id;
+            if($id_a !== "" and $id_b !== "" and $id_a === $id_b) $exist_same_team_id = true;
+        }
+        for($i=0; $i<count($current_teams[$idx_row[$v]]); $i++) {
+            if($i == $idx_col[$v]) continue;
+            $id_a = $current_teams[$idx_row[$v]][$idx_col[$v]]->team_id;
+            $id_b = $current_teams[$idx_row[$v]][$i          ]->team_id;
+            if($id_a !== "" and $id_b !== "" and $id_a === $id_b) $exist_same_team_id = true;
+        }
+        if($exist_same_team_id == true) continue;
 
         // 現在の割当を参照渡し (結局交換しないなら直すこと！！)
         $next_teams = &$current_teams;
@@ -144,7 +235,7 @@ function getAssignments($users) {
         
         // 差分 (古いのを引いて新しいのを足す)
         $delta_sum_square = $rhs_square - $lhs_square;
-        $delta_sum_linear = $rhs_linear - $rhs_linear;
+        $delta_sum_linear = $rhs_linear - $lhs_linear;
         $delta_sum_of_dbl = $rhs_dbl - $lhs_dbl;
         
         $next_sum_square = $sum_square + $delta_sum_square;
@@ -152,10 +243,15 @@ function getAssignments($users) {
         $next_sum_of_dbl = $sum_of_dbl + $delta_sum_of_dbl;
         
         $next_score = calculatePoint($next_sum_square, $next_sum_linear, $next_sum_of_dbl, $num_of_teams);
-        
-        $temp = START_TEMP + (END_TEMP - START_TEMP) * $step / NUM_OF_ANNEALING_STEP;
-        $prob = exp(($current_score - $next_score) / $temp);
+
+        // 点数が小さいほうが良いので、diff が正なら採用・負でも確率的に採用
+        $diff = 30 * ($current_score - $next_score) / $current_score;
+        $prob = exp($diff / $temp);
         $accept = $prob > random_float();
+
+        if($step % 3000 == 0) {
+            $temp *= TEMP_COEFF;
+        }
 
         if($accept) {
             // $current_teams = $next_teams; 参照にしたからいらなそう
@@ -173,8 +269,9 @@ function getAssignments($users) {
             $sum_of_dbl = $next_sum_of_dbl;
 
             if($next_score < $best_score) {
-                $best_teams = $next_teams;
-                $best_score = $next_score;                
+                $best_teams      = $next_teams;
+                $best_score      = $next_score;
+                $best_sum_of_dbl = $next_sum_of_dbl;
             }
         }
         else {
@@ -183,6 +280,8 @@ function getAssignments($users) {
                  $next_teams[$idx_row[$v]][$idx_col[$v]]);         
         }
     }
+
+    // echo "! final result: sum_of_dbl = " . $best_sum_of_dbl . ", point = " . $best_score . "<br>";
 
     // 各チームをソート
     foreach($best_teams as &$team) {

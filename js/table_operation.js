@@ -1,3 +1,12 @@
+function escapeHTML(s) {
+    return s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 $(document).ready(function() {
     $(document).on('click', '#add_row', function(e) {
         var tr_row = '' +
@@ -8,6 +17,11 @@ $(document).ready(function() {
            '<label class="custom-control-label" for="take-user"></label>' +
            '</div>' +
            '</td>' +
+           '<td class="slim-cell col-sm-1">' +
+           '<div class="form-group slim-form-group">' +
+           '<input type="text" class="form-control" name="team_id" value="">' +
+           '</div>' +
+           '</td>' + 
            '<td class="slim-cell">' +
            '<div class="form-group slim-form-group">' +
            '<input type="text" class="form-control" name="handle" value="">' +
@@ -20,7 +34,7 @@ $(document).ready(function() {
            '</td>' +
            '<td class="slim-cell">' +
            '<div class="form-group slim-form-group">' +
-           '<input type="text" class="form-control" name="affiliation" value="">' +
+           '<input type="text" class="form-control" name="affiliation" id="affiliation-user" value="">' +
            '</div>' +
            '</td>' +
            '</tr>'
@@ -29,15 +43,21 @@ $(document).ready(function() {
         $(tr_row).appendTo($('table > tbody'));
         $('table > tbody > tr:last > td > div > input').each(function() {
             var base_name = $(this).attr('name');
-            $(this).attr('name', base_name + '[' + row_cnt + ']');
+            if(base_name !== undefined) {
+                $(this).attr('name', base_name + '[' + row_cnt + ']');
+            }
         });
         $('table > tbody > tr:last > td > div > input').each(function() {
             var base_name = $(this).attr('id');
-            $(this).attr('id', base_name + '-' + row_cnt);
+            if(base_name !== undefined) {
+                $(this).attr('id', base_name + '-' + row_cnt);
+            }
         });
         $('table > tbody > tr:last > td > div > label').each(function() {
             var base_name = $(this).attr('for');
-            $(this).attr('for', base_name + '-' + row_cnt);
+            if(base_name !== undefined) {
+                $(this).attr('for', base_name + '-' + row_cnt);
+            }
         });
     });
 
@@ -57,6 +77,33 @@ $(document).ready(function() {
     // 全解除
     $(document).on('click', '#remove_all', function(e) {
         $('input[name^=take_user]').prop('checked', false);
+    });
+
+    // 特定の所属に関して全チェック
+    $(document).on('click', '#check_by_affil', function(e) {
+        var target_affil = escapeHTML($('#target_affil').val()).toLowerCase();
+        var row_cnt = $("table tbody").children().length;
+        for(var i=0; i<row_cnt; i++) {
+            var affil_id = '#affiliation-user-' + i;
+            var check_id = '#take-user-' + i;
+            var affil = escapeHTML($(affil_id).val()).toLowerCase();
+            if(target_affil === affil) {
+                $(check_id).prop('checked', true);
+            }
+        }
+    });
+
+    $(document).on('click', '#uncheck_by_affil', function(e) {
+        var target_affil = escapeHTML($('#target_affil').val()).toLowerCase();
+        var row_cnt = $("table tbody").children().length;
+        for(var i=0; i<row_cnt; i++) {
+            var affil_id = '#affiliation-user-' + i;
+            var check_id = '#take-user-' + i;
+            var affil = escapeHTML($(affil_id).val()).toLowerCase();
+            if(target_affil === affil) {
+                $(check_id).prop('checked', false);
+            }
+        }
     });
 
     // ボタンを押したときに form action の内容を変更

@@ -1,11 +1,12 @@
 <?php
 
-// ユーザーのハンドルネーム・ID・レート・所属を管理
+// ユーザーのハンドルネーム・チーム ID・AtCoder ID・レート・所属を管理
 class UserInfo {
-    public $handle, $user_name, $rating, $affiliation;
+    public $handle, $team_id, $user_name, $rating, $affiliation;
 
-    function __construct($handle_, $user_name_, $rating_, $affil_) {
+    function __construct($handle_, $team_id_, $user_name_, $rating_, $affil_) {
         $this->handle      = $handle_;
+        $this->team_id     = $team_id_;
         $this->user_name   = $user_name_;
         $this->rating      = $rating_;
         $this->affiliation = $affil_;
@@ -14,9 +15,14 @@ class UserInfo {
 
     function escape() {
         $this->handle      = filter_var($this->handle     , FILTER_SANITIZE_SPECIAL_CHARS);
+        $this->team_id     = filter_var($this->team_id    , FILTER_SANITIZE_SPECIAL_CHARS);
         $this->user_name   = filter_var($this->user_name  , FILTER_SANITIZE_SPECIAL_CHARS);
         $this->rating      = filter_var($this->rating     , FILTER_SANITIZE_SPECIAL_CHARS);
         $this->affiliation = filter_var($this->affiliation, FILTER_SANITIZE_SPECIAL_CHARS);
+    }
+
+    function setTeamID($new_team_id) {
+        $this->team_id = filter_var($new_team_id, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 };
 

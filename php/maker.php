@@ -88,9 +88,6 @@ function h($str) {
                 
                 // 1. 再実行フラグが立っているなら前の情報を使う
                 if($re_execute !== false) {
-                    foreach(array('user_array', 'error_array') as $str) {
-                        foreach($_SESSION[$str] as &$user) $user->escape();
-                    }
                     $user_array = $_SESSION['user_array'];
                     $error_array = $_SESSION['error_array'];
                 }
@@ -98,7 +95,7 @@ function h($str) {
                 else {
                     // POST で送られた情報をフィルタリングしつつ受け取る
                     $args = array();
-                    foreach(array('take_user', 'handle', 'user_id', 'affiliation') as $v) {
+                    foreach(array('take_user', 'team_id', 'handle', 'user_id', 'affiliation') as $v) {
                         // special chars を除去・配列に限定
                         $args[$v] = array('filter' => FILTER_SANITIZE_SPECIAL_CHARS,
                                           'flags'  => FILTER_REQUIRE_ARRAY);
@@ -107,10 +104,11 @@ function h($str) {
                     $filter_info = filter_input_array(INPUT_POST, $args);
                     extract($filter_info);
 
-                    $tables = getUserArray($take_user, $handle, $user_id, $affiliation);
+                    $tables = getUserArray($take_user, $team_id, $handle, $user_id, $affiliation);
                     list($user_array, $error_array) = $tables;
                     $_SESSION['user_array'] = $user_array;
-                    $_SESSION['error_array'] = $error_array;     
+                    $_SESSION['error_array'] = $error_array;
+                    var_dump($error_array);
                 }
 
                 // 最終的な割当を得る
@@ -123,24 +121,27 @@ function h($str) {
 
                 // かぶっているかどうかを判定
                 $has_dbl = array();
-                foreach($final_assignment as $team) {
-                    usort($team, "cmpUserAffil");
-                    $last_affil = $has_dbl_team = false;
-                    foreach($team as $member) {
-                        $affil = $member->affiliation;
-                        if($affil == NONE_AFFIL) continue;
-                        if($last_affil == $affil) {
-                            $has_dbl_team = true;
-                            $exist_dbl_affiliation = true;
-                        }
-                        $last_affil = $affil;
-                    }
-                    array_push($has_dbl, $has_dbl_team);
-                }
 
-                // 列の数
-                foreach($final_assignment as $team) {
-                    $num_of_column = max($num_of_column, count($team));
+                if(is_array($final_assignment)) {
+                    foreach($final_assignment as $team) {
+                        usort($team, "cmpUserAffil");
+                        $last_affil = $has_dbl_team = false;
+                        foreach($team as $member) {
+                            $affil = $member->affiliation;
+                            if($affil == NONE_AFFIL) continue;
+                            if($last_affil == $affil) {
+                                $has_dbl_team = true;
+                                $exist_dbl_affiliation = true;
+                            }
+                            $last_affil = $affil;
+                        }
+                        array_push($has_dbl, $has_dbl_team);
+                    }
+                    
+                    // 列の数
+                    foreach($final_assignment as $team) {
+                        $num_of_column = max($num_of_column, count($team));
+                    }
                 }
             }
 
@@ -160,7 +161,7 @@ function h($str) {
                         </div>
                     </div>
                 </section>
-            <?php elseif($final_assignment == array()) : ?>
+            <?php elseif($final_assignment === MEMBER_EMPTY) : ?>
                 <div class="alert alert-danger" role="alert">
                     <span class="fas fa-exclamation-triangle"></span> チーム分けの対象となるユーザーが存在しません。
                 </div>
@@ -174,6 +175,20 @@ function h($str) {
                         </div>
                     </div>
                 </section>
+            <?php elseif($final_assignment === INVALID_TEAM_ID_ASSIGNMENT) : ?>
+                <div class="alert alert-danger" role="alert">
+                    <span class="fas fa-exclamation-triangle"></span> Team ID の割当が不正です。
+                </div>
+
+                <section>
+                    <div class="form" role="form" style="text-align:center;">
+                        <div class="row">
+                            <div class="col-sm">
+                                <button type="button" class="btn btn-primary btn-block mb-3" onClick="location.href='../index.php'">トップに戻る</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>                
             <?php else : ?>
                 <section>
                     <form action="./maker.php" method="post" role="form" style="text-align:center;">
@@ -243,6 +258,11 @@ function h($str) {
                                 echo("<td><div style=\"text-align:center;\">");
                                 if($i < $num_of_members) {
                                     $color_code = getColorCode($team[$i]->rating);
+
+                                    // team id があれば表示
+                                    if($team[$i]->team_id !== "") {
+                                        echo("<span style=\"color:gray; font-size:0.8em;\">[". $team[$i]->team_id ."]</span> ");
+                                    }
                                     
                                     // ハンドルネームとユーザー ID
                                     echo($team[$i]->handle);

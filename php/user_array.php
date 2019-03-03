@@ -5,7 +5,7 @@ require_once "./fetch_user_info.php";
 
 // ユーザー構造体配列に変換
 // $rating_key は 'rating' か 'highest' (default: 'rating')
-function getUserArray($take_user, $handle, $user_id, $affiliation, $rating_key='rating') {
+function getUserArray($take_user, $team_id, $handle, $user_id, $affiliation, $rating_key='rating') {
     // 全ての配列は同じであると仮定 (表の構造的に例外処理しなくてもいい気がしている)
     $len = count($user_id);
 
@@ -39,7 +39,7 @@ function getUserArray($take_user, $handle, $user_id, $affiliation, $rating_key='
             }
         }
         
-        $user = new UserInfo($handle[$i], $user_info['name'], $user_info['rating'], $affiliation[$i]);
+        $user = new UserInfo($handle[$i], $team_id[$i], $user_info['name'], $user_info['rating'], $affiliation[$i]);
 
         // レートが負なら、そのユーザーが存在しないことを表す
         if($user_info[$rating_key] < 0) {
