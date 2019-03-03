@@ -108,7 +108,6 @@ function h($str) {
                     list($user_array, $error_array) = $tables;
                     $_SESSION['user_array'] = $user_array;
                     $_SESSION['error_array'] = $error_array;
-                    var_dump($error_array);
                 }
 
                 // 最終的な割当を得る
