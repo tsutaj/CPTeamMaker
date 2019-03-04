@@ -88,6 +88,7 @@ $token = $_SESSION['token'];
                     <ul style="margin: 10px 0;">
                         <li>チーム間の実力差をできるだけ小さくする</li>
                         <li>できるだけ所属が異なる参加者同士でチームを組む</li>
+                        <li>過去のチーム分けで同じチームに属した組は、できるだけ異なるチームに属するようにする</li>
                     </ul>
 
                     内部で使用している評価関数やアルゴリズムなどの、アプリケーションの詳細については <a href="./about.html">About ページ</a> をご覧ください。
@@ -97,6 +98,8 @@ $token = $_SESSION['token'];
 
             <!-- import CSV file -->
             <h3><span class="fas fa-file-csv"></span> CSV ファイルをインポート</h3>
+
+            <p class="my-2">CSV 形式のファイルをインポートし、ユーザー情報テーブルの入力時間を短縮できます。</p>
 
             <div id="csv-card">
                 <div class="card how-to-use-detail">
@@ -149,6 +152,9 @@ waku,wakuwinmail,Megido</code></pre>
             
             <!-- text input forms -->
             <h3><span class="fas fa-pencil-alt"></span> テーブルを直接編集</h3>
+
+            <p class="my-2">ユーザー情報テーブルを直接編集します。編集した表は CSV 形式でエクスポート可能です。</p>
+
             <div id="edit-table-card">
                 <div class="card how-to-use-detail">
                     <div class="card-header" id="heading-edit-table">
@@ -272,7 +278,14 @@ EOT;
                 </table>
                 <!-- text input forms end -->
 
+                <input type="hidden" name="row_length">
+                <input type="hidden" name="token" value="<?php echo h($token); ?>">
+                <input id="csv_export_btn" type="submit" name="send" class="btn btn-primary mb-2 mt-2 btn-block" value="CSV をエクスポート">
+
                 <h3><span class="fas fa-table"></span> 過去のチーム分け結果をインポート</h3>
+
+                <p class="my-2">過去の結果を読み込みます (複数選択可)。過去の結果において同じチームに属した組に対して、できるだけ異なるチームに属するようにチーム分けすることができます。</p>
+
                 <!-- json files import form -->
                 <div id="json_import_section">
                     <div class="input-group">
@@ -287,12 +300,9 @@ EOT;
 
                 <!-- json files import form end -->
 
-                <!-- submit form -->
-                <input type="hidden" name="row_length">
-                <input type="hidden" name="token" value="<?php echo h($token); ?>">
-                <input id="run_team_making_btn" type="submit" name="send" class="btn btn-primary mb-2 mt-4 btn-block" value="チーム分けを実行">
-                <input id="csv_export_btn" type="submit" name="send" class="btn btn-primary mb-4 btn-block" value="CSV をエクスポート">
-                <!-- submit form end-->
+                <!-- submit form (team maker) -->
+                <input id="run_team_making_btn" type="submit" name="send" class="btn btn-primary mb-3 mt-4 btn-block" value="チーム分けを実行">
+                <!-- submit form (team maker) end-->
             </form>
         </div>
         <!-- main-container end -->
