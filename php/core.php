@@ -187,7 +187,7 @@ function getAssignments($users) {
         
         for($i=0; $i<$div; $i++) {
             array_push($initial_teams, array());
-            $lim = NUM_OF_TEAM_MEMBER + ($i < $mod);
+            $lim = NUM_OF_TEAM_MEMBER + ($i >= $div - $mod);
             if($i < count($partially_determined_users) and count($partially_determined_users[$i]) > $lim) {
                 return INVALID_TEAM_ID_ASSIGNMENT;
             }
