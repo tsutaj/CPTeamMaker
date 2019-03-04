@@ -5,7 +5,10 @@ require_once "./utils.php";
 
 // この辺は後でパラメータを受け取るように変えたいね
 const NUM_OF_TEAM_MEMBER = 3;
-const NUM_OF_ANNEALING_STEP = 300000;
+
+const NUM_OF_ANNEALING_STEP = 300000; // for release
+// const NUM_OF_ANNEALING_STEP = 10000; // for debug
+
 const START_TEMP = 70.0;
 // const END_TEMP = 0.0;
 const TEMP_COEFF = 0.90;
@@ -49,6 +52,27 @@ function evaluateTeam($team) {
         if($team[$i]->affiliation == NONE_AFFIL) continue;
         if($last_affil == $team[$i]->affiliation) $num_of_dbl++;
         $last_affil = $team[$i]->affiliation;
+    }
+
+    for($i=0; $i<$num_of_members; $i++) {
+        for($j=$i+1; $j<$num_of_members; $j++) {
+            $p_size_i = count($team[$i]->past_assignments);
+            $p_size_j = count($team[$j]->past_assignments);
+
+            $has_dbl_past_affil = false;
+            for($x=0; $x<$p_size_i; $x++) {
+                for($y=0; $y<$p_size_j; $y++) {
+                    if($team[$i]->past_assignments[$x] == $team[$j]->past_assignments[$y]) {
+                        // すぐ抜ける
+                        $has_dbl_past_affil = true;
+                        $x = $p_size_i;
+                        $y = $p_size_j;
+                    }
+                }
+            }
+
+            if($has_dbl_past_affil) $num_of_dbl++;
+        }
     }
 
     // 平均を取るのと、値が大きくなりがちなので PONIT_DIV で割る

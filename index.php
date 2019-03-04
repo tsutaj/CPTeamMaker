@@ -46,7 +46,7 @@ $token = $_SESSION['token'];
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script type="text/javascript" src="./js/detail_anime.js"></script>
         <script type="text/javascript" src="./js/table_operation.js"></script>
-        <script type="text/javascript" src="./js/import_csv.js"></script>
+        <script type="text/javascript" src="./js/import_file.js"></script>
     </head>
     <body>
         <!-- main-container -->
@@ -172,7 +172,7 @@ waku,wakuwinmail,Megido</code></pre>
                     </div>
                 </div>
             </div>
-            <form id="main_form_table" action="./php/maker.php" method="post">
+            <form role="form" id="main_form_table" action="./php/maker.php" method="post" enctype="multipart/form-data">
                 <table class="table table-striped mb-0">
                     <thead class="thead-light">
                         <tr>
@@ -259,9 +259,9 @@ EOT;
                             <td colspan="5" class="p-0" style="border-style: none;">
                                 <div>
                                     所属が 
-                                    <input type="text" id="target_affil" class="form-control col-sm-3" style="display: inline;">
+                                    <input type="text" id="target_affil" class="form-control col-sm-3 mx-2" style="display: inline;">
                                      であるユーザーに対して
-                                    <div class="btn-group mb-2" role="group" aria-label="Group about selection by affiliation">
+                                    <div class="btn-group mb-1 ml-2" role="group" aria-label="Group about selection by affiliation">
                                         <button id="check_by_affil"   class="btn btn-secondary" type="button">全てチェック</button>
                                         <button id="uncheck_by_affil" class="btn btn-secondary" type="button">全てチェックを外す</button>
                                     </div>
@@ -272,10 +272,25 @@ EOT;
                 </table>
                 <!-- text input forms end -->
 
+                <h3><span class="fas fa-table"></span> 過去のチーム分け結果をインポート</h3>
+                <!-- json files import form -->
+                <div id="json_import_section">
+                    <div class="input-group">
+                        <label class="input-group-btn">
+                            <span class="btn btn-primary">
+                                ファイルを選択<input type="file" name="json_file[]" accept="application/json" style="display:none" multiple>
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" readonly="">
+                    </div>
+                </div>
+
+                <!-- json files import form end -->
+
                 <!-- submit form -->
                 <input type="hidden" name="row_length">
                 <input type="hidden" name="token" value="<?php echo h($token); ?>">
-                <input id="run_team_making_btn" type="submit" name="send" class="btn btn-primary mb-2 btn-block" value="チーム分けを実行">
+                <input id="run_team_making_btn" type="submit" name="send" class="btn btn-primary mb-2 mt-4 btn-block" value="チーム分けを実行">
                 <input id="csv_export_btn" type="submit" name="send" class="btn btn-primary mb-4 btn-block" value="CSV をエクスポート">
                 <!-- submit form end-->
             </form>

@@ -25,4 +25,11 @@ function getColorCode($rating) {
     return "#FF0000";
 }
 
+// デバッグ出力に使う
+function var_dump_echo($var) {
+    echo("<pre>");
+    var_dump($var);
+    echo("</pre>");
+}
+
 ?>

@@ -32,11 +32,21 @@ $(document).ready(function() {
     })();
     */
     
-    // ファイルブラウザ画面にファイルを表示
+    // ファイルブラウザ画面にファイル名を表示
     $(document).on('change', 'input[type="file"]', function() {
+        function r(str) {
+            return str.replace(/\\/g, '/').replace(/.*\//, '');
+        }
+        
         var input = $(this),
-            numFiles = input.get(0).files ? input.get(0).files.length : 1,
-            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            numFiles = input.get(0).files ? input.get(0).files.length : 0;
+        
+        var label = '';
+        for(var i=0; i<numFiles; i++) {
+            label += r(input.get(0).files[i].name);
+            if(i + 1 < numFiles) label += ', ';
+        }
+
         input.parent().parent().next('input[type="text"]').val(label);
     });
 });

@@ -8,36 +8,37 @@ function escapeHTML(s) {
 }
 
 $(document).ready(function() {
+    // ユーザー情報を入力する表に対して、末尾に行を追加
     $(document).on('click', '#add_row', function(e) {
         var tr_row = '' +
-           '<tr>' +
-           '<td class="slim-cell">' +
-           '<div class="custom-control custom-checkbox slim-form-check">' +
-           '<input type="checkbox" class="custom-control-input" name="take_user" checked="checked" id="take-user">' +
-           '<label class="custom-control-label" for="take-user"></label>' +
-           '</div>' +
-           '</td>' +
-           '<td class="slim-cell col-sm-1">' +
-           '<div class="form-group slim-form-group">' +
-           '<input type="text" class="form-control" name="team_id" value="">' +
-           '</div>' +
-           '</td>' + 
-           '<td class="slim-cell">' +
-           '<div class="form-group slim-form-group">' +
-           '<input type="text" class="form-control" name="handle" value="">' +
-           '</div>' +
-           '</td>' +
-           '<td class="slim-cell">' +
-           '<div class="form-group slim-form-group">' +
-           '<input type="text" class="form-control" name="user_id" value="">' +
-           '</div>' +
-           '</td>' +
-           '<td class="slim-cell">' +
-           '<div class="form-group slim-form-group">' +
-           '<input type="text" class="form-control" name="affiliation" id="affiliation-user" value="">' +
-           '</div>' +
-           '</td>' +
-           '</tr>'
+            '<tr>' +
+            '<td class="slim-cell">' +
+            '<div class="custom-control custom-checkbox slim-form-check">' +
+            '<input type="checkbox" class="custom-control-input" name="take_user" checked="checked" id="take-user">' +
+            '<label class="custom-control-label" for="take-user"></label>' +
+            '</div>' +
+            '</td>' +
+            '<td class="slim-cell col-sm-1">' +
+            '<div class="form-group slim-form-group">' +
+            '<input type="text" class="form-control" name="team_id" value="">' +
+            '</div>' +
+            '</td>' + 
+            '<td class="slim-cell">' +
+            '<div class="form-group slim-form-group">' +
+            '<input type="text" class="form-control" name="handle" value="">' +
+            '</div>' +
+            '</td>' +
+            '<td class="slim-cell">' +
+            '<div class="form-group slim-form-group">' +
+            '<input type="text" class="form-control" name="user_id" value="">' +
+            '</div>' +
+            '</td>' +
+            '<td class="slim-cell">' +
+            '<div class="form-group slim-form-group">' +
+            '<input type="text" class="form-control" name="affiliation" id="affiliation-user" value="">' +
+            '</div>' +
+            '</td>' +
+            '</tr>'
         var row_cnt = $("table tbody").children().length;
         $(':hidden[name="row_length"]').val(parseInt(row_cnt) + 1);
         $(tr_row).appendTo($('table > tbody'));
@@ -61,6 +62,8 @@ $(document).ready(function() {
         });
     });
 
+    // ユーザー情報を入力する表に対して、末尾の行を削除
+    // 1 行しかないなら何もしない
     $(document).on('click', '#del_row', function(e) {
         var row_cnt = $("table tbody").children().length;
         if(parseInt(row_cnt) > 1) {
@@ -105,6 +108,34 @@ $(document).ready(function() {
             }
         }
     });
+
+    /*
+    // ひとつのフォームから複数のファイルを受け取れるので不要になった
+
+    // json ファイルインポートリストに対して、末尾に行を追加
+    $(document).on('click', '#add_row_json', function(e) {
+        var row_cnt = parseInt($('#json_import_section').children().length);
+        var tr_row = '' +
+            '<div class="input-group">' +
+            '<label class="input-group-btn">' +
+            '<span class="btn btn-primary">' +
+            'ファイルを選択<input type="file" name="json_file[]" accept="application/json" style="display:none">' +
+            '</span>' +
+            '</label>' +
+            '<input type="text" class="form-control" readonly="">' +
+            '</div>';
+        $(tr_row).appendTo($('#json_import_section'));
+    });
+
+    // json ファイルインポートリストに対して、末尾の行を削除
+    // 1 行しかない場合は何もしない
+    $(document).on('click', '#del_row_json', function(e) {
+        var row_cnt = parseInt($('#json_import_section').children().length);
+        if(row_cnt > 1) {
+            $('#json_import_section > div:last').remove();
+        }
+    });
+    */
 
     // ボタンを押したときに form action の内容を変更
     $(document).on('click', '#run_team_making_btn', function(e) {

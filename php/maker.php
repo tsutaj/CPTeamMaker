@@ -5,6 +5,7 @@ require_once "./utils.php";
 require_once "./user_class.php";
 require_once "./user_array.php";
 require_once "./core.php";
+require_once "./json_import.php";
 
 // 他のサイトでインラインフレーム表示を禁止する（クリックジャッキング対策）
 header('X-FRAME-OPTIONS: SAMEORIGIN');
@@ -44,7 +45,7 @@ function h($str) {
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script type="text/javascript" src="../js/detail_anime.js"></script>
         <script type="text/javascript" src="../js/table_operation.js"></script>
-        <script type="text/javascript" src="../js/import_csv.js"></script>
+        <script type="text/javascript" src="../js/import_file.js"></script>
     </head>
     <body>
         <!-- main-container -->
@@ -104,7 +105,15 @@ function h($str) {
                     $filter_info = filter_input_array(INPUT_POST, $args);
                     extract($filter_info);
 
-                    $tables = getUserArray($take_user, $team_id, $handle, $user_id, $affiliation);
+                    // json ファイルをフィルタリングしつつインポート
+                    // (ユーザー名 => 過去のチーム ID 配列) の連想配列を持つ
+                    $past_assignments = array();
+                    if(isset($_FILES["json_file"]["tmp_name"])) {
+                        $past_assignments = getPastAssignments($_FILES["json_file"]);
+                    }
+
+                    $tables = getUserArray($take_user, $team_id, $handle, $user_id, $affiliation, $past_assignments);
+                    
                     list($user_array, $error_array) = $tables;
                     $_SESSION['user_array'] = $user_array;
                     $_SESSION['error_array'] = $error_array;
@@ -117,9 +126,14 @@ function h($str) {
 
                 // 所属の被りがあるかどうか
                 $exist_dbl_affiliation = false;
+                $exist_dbl_past_part = false;
 
-                // かぶっているかどうかを判定
+                // 所属がかぶっているかどうかを判定
                 $has_dbl = array();
+                // 前のチーム分けとかぶっているかどうかを判定
+                $has_dbl_past_part = array();
+                // どのようにかぶっているかどうか、その状態数を記録
+                $cnt_state_dbl = array(0, 0, 0, 0);
 
                 if(is_array($final_assignment)) {
                     foreach($final_assignment as $team) {
@@ -129,12 +143,42 @@ function h($str) {
                             $affil = $member->affiliation;
                             if($affil == NONE_AFFIL) continue;
                             if($last_affil == $affil) {
+                                // すぐ抜ける
                                 $has_dbl_team = true;
                                 $exist_dbl_affiliation = true;
+                                break;
                             }
                             $last_affil = $affil;
                         }
                         array_push($has_dbl, $has_dbl_team);
+
+                        $has_dbl_past_part_team = false;
+                        $n = count($team);
+                        for($i=0; $i<$n; $i++) {
+                            for($j=$i+1; $j<$n; $j++) {
+                                $p_size_i = count($team[$i]->past_assignments);
+                                $p_size_j = count($team[$j]->past_assignments);
+                                
+                                for($x=0; $x<$p_size_i; $x++) {
+                                    for($y=0; $y<$p_size_j; $y++) {
+                                        if($team[$i]->past_assignments[$x] == $team[$j]->past_assignments[$y]) {
+                                            // すぐ抜ける
+                                            $has_dbl_past_part_team = true;
+                                            $exist_dbl_past_part = true;
+                                            $x = $p_size_i;
+                                            $y = $p_size_j;
+                                            $i = $n;
+                                            $j = $n;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        array_push($has_dbl_past_part, $has_dbl_past_part_team);
+
+                        $state = $has_dbl_past_part_team * 2 + $has_dbl_team;
+                        $cnt_state_dbl[$state]++;
                     }
                     
                     // 列の数
@@ -214,15 +258,30 @@ function h($str) {
                     </div>
                     <div class="card-body">
                         「JSON として保存」をクリックすることで、下に表示されているチーム分けの結果を JSON 形式で保存することができます。
-                        <!-- この JSON ファイルを次のチーム分けの機会のために取っておき、トップページの「高度な設定」内でインポートすることで、今回のチーム分けで同一のチームに割り当てられたメンバーが再び同一のチームに割り当てられることがないようにチーム分けすることができます。 -->
-                        この JSON ファイルを次のチーム分けの機会のために取っておき、トップページ内でインポートすることで、今回のチーム分けで同一のチームに割り当てられたメンバーが再び同一のチームに割り当てられることがないようにチーム分けする機能を追加予定です。
+                        この JSON ファイルを次のチーム分けの機会のために取っておき、トップページでインポートすることで、今回のチーム分けで同一のチームに割り当てられたメンバーが再び同一のチームに割り当てられることがないようにチーム分けすることができます。
                     </div>
                 </div>
-                
-                <?php if($exist_dbl_affiliation) : ?>
+
+                <?php if($cnt_state_dbl[3] > 0) : ?>
                     <div class="alert alert-danger" role="alert">
-                        <span class="fas fa-exclamation-triangle"></span> 背景色が赤色である行で、所属の重複が発生しています。「もう一度実行」をクリックすることで、同条件でもう一度チーム分けを実行できます。
+                        <span class="fas fa-exclamation-triangle"></span> 背景色が赤色である行で、所属および過去のチーム分け結果との重複が発生しています。
                     </div>
+                <?php endif; ?>
+                <?php if($cnt_state_dbl[2] > 0) : ?>
+                    <div class="alert alert-info" role="alert">
+                        <span class="fas fa-exclamation-triangle"></span> 背景色が青色である行で、過去のチーム分け結果との重複が発生しています。
+                    </div>
+                <?php endif; ?>
+                <?php if($cnt_state_dbl[1] > 0) : ?>
+                    <div class="alert alert-warning" role="alert">
+                        <span class="fas fa-exclamation-triangle"></span> 背景色が黄色である行で、所属の重複が発生しています。
+                    </div>
+                <?php endif; ?>
+
+                <?php if($exist_dbl_affiliation or $exist_dbl_past_part) : ?>
+                    <p>
+                        「もう一度実行」をクリックすることで、同条件でもう一度チーム分けを実行できます。
+                    </p>
                 <?php endif; ?>
                 
                 <table class="table table-striped mb-3">
@@ -244,13 +303,25 @@ function h($str) {
                             $current_idx++;
                             $num_of_members = count($team);
 
-                            // 所属が重複しているなら強調
-                            if($has_dbl[$k]) {
-                                echo("<tr class=\"table-danger\">");
+                            // 所属や過去のチーム分けが重複しているなら強調
+                            $team_class = "";
+
+                            // どちらの重複も起こっている: 赤
+                            if($has_dbl[$k] and $has_dbl_past_part[$k]) {
+                                $team_class = "table-danger";
                             }
-                            else {
-                                echo("<tr>");
+                            // 過去のチーム分けと重複: 青
+                            else if($has_dbl_past_part[$k]) {
+                                $team_class = "table-info"; 
                             }
+                            // 所属の重複: 黄
+                            else if($has_dbl[$k]) {
+                                $team_class = "table-warning";
+                            }
+                            
+                            echo <<<EOT
+<tr class="{$team_class}">
+EOT;
                             
                             echo("<td style=\"text-align:center;\">Team " . (string)$current_idx . "</td>");
                             for($i=0; $i<$num_of_column; $i++) {
