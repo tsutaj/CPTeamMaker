@@ -2,7 +2,7 @@
 
 // POST で送られた情報をフィルタリングしつつ受け取る
 $args = array();
-foreach(array('handle', 'user_id', 'affiliation') as $v) {
+foreach(array('team_id', 'handle', 'user_id', 'affiliation') as $v) {
     // special chars を除去・配列に限定
     $args[$v] = array('filter' => FILTER_SANITIZE_SPECIAL_CHARS,
                       'flags'  => FILTER_REQUIRE_ARRAY);
@@ -15,7 +15,7 @@ $tables = array();
 for($i=0; $i<count($handle); $i++) {
     // ハンドルネームがない行は無視
     if(empty($handle[$i])) continue;
-    array_push($tables, array($handle[$i], $user_id[$i], $affiliation[$i]));
+    array_push($tables, array($team_id[$i], $handle[$i], $user_id[$i], $affiliation[$i]));
 }
 
 ob_start();

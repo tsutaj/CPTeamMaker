@@ -144,8 +144,15 @@ waku,wakuwinmail,Megido</code></pre>
             <?php
             require_once "./php/csv_import.php";
             $csv_array = false;
-            if(isset($_FILES["csv_file"]["tmp_name"]) and is_uploaded_file($_FILES["csv_file"]["tmp_name"])) {
-                $csv_array = getCSVFile($_FILES["csv_file"]["tmp_name"]);
+
+            // _SESSION に存在すればそちらを採用する
+            if(isset($_SESSION['csv_file'])) {
+                $csv_array = $_SESSION['csv_file'];
+            }
+            // _FILES に存在すればそちらを採用する
+            else if(isset($_FILES['csv_file']['tmp_name']) and is_uploaded_file($_FILES['csv_file']['tmp_name'])) {
+                $csv_array = getCSVFile($_FILES['csv_file']['tmp_name']);
+                $_SESSION['csv_file'] = $csv_array;
             }
             ?>
             <!-- import CSV file end -->
@@ -199,10 +206,10 @@ waku,wakuwinmail,Megido</code></pre>
                                 echo <<<EOT
 <tr>
     <td class="slim-cell"><div class="custom-control custom-checkbox slim-form-check"><input type="checkbox" class="custom-control-input" name="take_user[{$i}]" checked="checked" id="take-user-{$i}"><label class="custom-control-label" for="take-user-{$i}"></label></div></td>
-    <td class="slim-cell col-sm-1"><div class="form-group slim-form-group"><input type="text" class="form-control" name="team_id[{$i}]" value=""></div></td>
-    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="handle[{$i}]" value="{$row[0]}"></div></td>
-    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="user_id[{$i}]" value="{$row[1]}"></div></td>
-    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="affiliation[{$i}]" id="affiliation-user-{$i}" value="{$row[2]}"></div></td>
+    <td class="slim-cell col-sm-1"><div class="form-group slim-form-group"><input type="text" class="form-control" name="team_id[{$i}]" value="{$row[0]}"></div></td>
+    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="handle[{$i}]" value="{$row[1]}"></div></td>
+    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="user_id[{$i}]" value="{$row[2]}"></div></td>
+    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="affiliation[{$i}]" id="affiliation-user-{$i}" value="{$row[3]}"></div></td>
 </tr>
 EOT;
                             }

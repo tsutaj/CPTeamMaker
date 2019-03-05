@@ -1,7 +1,7 @@
 <?php
 
 // 1 行あたりの情報の列数
-const NUM_OF_COLS = 3;
+const NUM_OF_COLS = 4;
 
 // CSV ファイルを読み込み、配列に変換
 function getCSVFile($src) {
@@ -23,14 +23,15 @@ function getCSVFile($src) {
     $res = array();
     foreach($obj_file as $row) {
         // 最後の行は NULL になってしまうみたい
-        $null_flag = false;
+        if(count($row) != NUM_OF_COLS) continue;
+        
+        $null_count = 0;
         foreach($row as &$elem) {
             $elem = filter_var($elem, FILTER_SANITIZE_SPECIAL_CHARS);
-            $null_flag |= (empty($elem));
+            $null_count += (empty($elem));
         }
 
-        if(!$null_flag) {
-            if(count($row) != NUM_OF_COLS) return false;
+        if($null_count != NUM_OF_COLS) {
             array_push($res, $row);
         }
     }
