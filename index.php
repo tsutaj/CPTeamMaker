@@ -111,14 +111,85 @@ $token = $_SESSION['token'];
                     </div>
                     <div id="collapse-csv" class="collapse" aria-labelledby="headmargin:0ing-csv">
                         <div class="card-body">
-                            以下の例で示されるような、「ハンドルネーム, AtCoder ID, 所属」がカンマ区切りで書かれている CSV ファイルを予め用意してください。下の「ファイルを選択」ボタンで CSV ファイルを選択し、「CSV をインポート」ボタンでその内容を表に反映させます。
+                            以下の例で示されるような、「チーム ID, ハンドルネーム, AtCoder ID, 所属」がカンマ区切りで書かれている CSV ファイルを予め用意してください。下の「ファイルを選択」ボタンで CSV ファイルを選択し、「CSV をインポート」ボタンでその内容を表に反映させます。
 
                             <div class="card" style="margin:10px 10px 0 10px;">
                                 <div class="card-body">
                                     <h5 class="card-title">CSV ファイルの例</h5>
-                                    <pre style="margin:0;"><code>tsutaj,Tsuta_J,four-t
-monkukui,monkukui,ragan
-waku,wakuwinmail,Megido</code></pre>
+                                    <pre style="margin:0 0 10 0;"><code>A,tsutaj,,four-t
+,monkukui,monkukui,ragan
+B,rsk0315,rsk0315,four-t
+A,waku,wakuwinmail,Megido
+,TAB,TAB,four-t
+B,tsukasa_diary,tsukasa_diary,</code></pre>
+
+                                    <h5 class="card-title">上記の CSV ファイルの意味</h5>
+                                    <p>わかりやすく述べると、以下のようになります。</p>
+
+                                    <table class="table">
+                                        <thead>
+                                            <th scope="col">チーム ID</th>
+                                            <th scope="col">ハンドルネーム</th>
+                                            <th scope="col">AtCoder ID</th>
+                                            <th scope="col">所属</th>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>A</td>
+                                                <td>tsutaj</td>
+                                                <td>(なし)</td>
+                                                <td>four-t</td>
+                                            </tr>
+                                            <tr>
+                                                <td>(なし)</td>
+                                                <td>monkukui</td>
+                                                <td>monkukui</td>
+                                                <td>ragan</td>
+                                            </tr>
+                                            <tr>
+                                                <td>B</td>
+                                                <td>rsk0315</td>
+                                                <td>rsk0315</td>
+                                                <td>four-t</td>
+                                            </tr>
+                                            <tr>
+                                                <td>A</td>
+                                                <td>waku</td>
+                                                <td>wakuwinmail</td>
+                                                <td>Megido</td>
+                                            </tr>
+                                            <tr>
+                                                <td>(なし)</td>
+                                                <td>TAB</td>
+                                                <td>TAB</td>
+                                                <td>four-t</td>
+                                            </tr>
+                                            <tr>
+                                                <td>B</td>
+                                                <td>tsukasa_diary</td>
+                                                <td>tsukasa_diary</td>
+                                                <td>(なし)</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <ul>
+                                        <li style="font-weight:bold;">ハンドルネームは必須項目です</li>
+                                        <li>AtCoder ID および所属は必須項目ではありません</li>
+                                        <ul>
+                                            <li>AtCoder ID を元にレート情報を取得するため、ID はできれば入力してください。情報がない人はレート 0 として扱われます。</li>
+                                            <li>所属は、できるだけ所属が異なる参加者同士でチームを組むために入力するものです。情報がない人はどこに割り当てられてもよいものとして扱われます。</li>
+                                        </ul>
+                                        <li>同じチーム ID が割り当てられた人は、必ず同じチームに割り当てられます</li>
+                                        <ul>
+                                            <li>上記の例では、次のような割り当てかたが適用されます</li>
+                                            <ol>
+                                                <li>"tsutaj" と "waku" は必ず同じチームに割り当てられます。</li>
+                                                <li>"rsk0315" と "tsukasa_diary" は必ず同じチームに割り当てられます。</li>
+                                                <li>"monkukui" と "TAB" はどこに割り当てられてもよいものとして扱われます。</li>
+                                            </ol>
+                                        </ul>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -172,7 +243,7 @@ waku,wakuwinmail,Megido</code></pre>
                     </div>
                     <div id="collapse-edit-table" class="collapse" aria-labelledby="heading-edit-table">
                         <div class="card-body">
-                            <p>「ハンドルネーム, Team ID, AtCoder ID, 所属」を下の表に書いてください。<p>
+                            <p>「Team ID, ハンドルネーム, AtCoder ID, 所属」を下の表に書いてください。<p>
                             <ul>
                                 <li>Team ID は、部分的にチームが決定している際に使用します。同一の Team ID が入力された人は、チーム分けにおいても必ず同一のチームになります。同一の Team ID を大量に入力した場合など、不正な入力である場合はチーム分けが失敗しますのでご注意ください。</li>
                                 <li>AtCoder ID は省略可能です</li>
