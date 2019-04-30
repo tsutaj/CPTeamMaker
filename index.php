@@ -216,15 +216,16 @@ B,tsukasa_diary,tsukasa_diary,</code></pre>
             require_once "./php/csv_import.php";
             $csv_array = false;
 
-            // _SESSION に存在すればそちらを採用する
-            if(isset($_SESSION['csv_file'])) {
-                $csv_array = $_SESSION['csv_file'];
-            }
             // _FILES に存在すればそちらを採用する
-            else if(isset($_FILES['csv_file']['tmp_name']) and is_uploaded_file($_FILES['csv_file']['tmp_name'])) {
+            if(isset($_FILES['csv_file']['tmp_name']) and is_uploaded_file($_FILES['csv_file']['tmp_name'])) {
                 $csv_array = getCSVFile($_FILES['csv_file']['tmp_name']);
                 $_SESSION['csv_file'] = $csv_array;
             }
+            // _SESSION に存在すればそちらを採用する
+            else if(isset($_SESSION['csv_file'])) {
+                $csv_array = $_SESSION['csv_file'];
+            }
+
             ?>
             <!-- import CSV file end -->
             

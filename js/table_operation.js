@@ -39,22 +39,22 @@ $(document).ready(function() {
             '</div>' +
             '</td>' +
             '</tr>'
-        var row_cnt = $("table tbody").children().length;
+        var row_cnt = $("#main_form_table table tbody").children().length;
         $(':hidden[name="row_length"]').val(parseInt(row_cnt) + 1);
-        $(tr_row).appendTo($('table > tbody'));
-        $('table > tbody > tr:last > td > div > input').each(function() {
+        $(tr_row).appendTo($('#main_form_table table > tbody'));
+        $('#main_form_table table > tbody > tr:last > td > div > input').each(function() {
             var base_name = $(this).attr('name');
             if(base_name !== undefined) {
                 $(this).attr('name', base_name + '[' + row_cnt + ']');
             }
         });
-        $('table > tbody > tr:last > td > div > input').each(function() {
+        $('#main_form_table table > tbody > tr:last > td > div > input').each(function() {
             var base_name = $(this).attr('id');
             if(base_name !== undefined) {
                 $(this).attr('id', base_name + '-' + row_cnt);
             }
         });
-        $('table > tbody > tr:last > td > div > label').each(function() {
+        $('#main_form_table table > tbody > tr:last > td > div > label').each(function() {
             var base_name = $(this).attr('for');
             if(base_name !== undefined) {
                 $(this).attr('for', base_name + '-' + row_cnt);
@@ -65,9 +65,9 @@ $(document).ready(function() {
     // ユーザー情報を入力する表に対して、末尾の行を削除
     // 1 行しかないなら何もしない
     $(document).on('click', '#del_row', function(e) {
-        var row_cnt = $("table tbody").children().length;
+        var row_cnt = $("#main_form_table table tbody").children().length;
         if(parseInt(row_cnt) > 1) {
-            $('table > tbody > tr:last').remove();
+            $('#main_form_table table > tbody > tr:last').remove();
             $(':hidden[name="row_length"]').val(parseInt(row_cnt) - 1);
         }
     });
@@ -85,7 +85,7 @@ $(document).ready(function() {
     // 特定の所属に関して全チェック
     $(document).on('click', '#check_by_affil', function(e) {
         var target_affil = escapeHTML($('#target_affil').val()).toLowerCase();
-        var row_cnt = $("table tbody").children().length;
+        var row_cnt = $("#main_form_table table tbody").children().length;
         for(var i=0; i<row_cnt; i++) {
             var affil_id = '#affiliation-user-' + i;
             var check_id = '#take-user-' + i;
@@ -98,7 +98,7 @@ $(document).ready(function() {
 
     $(document).on('click', '#uncheck_by_affil', function(e) {
         var target_affil = escapeHTML($('#target_affil').val()).toLowerCase();
-        var row_cnt = $("table tbody").children().length;
+        var row_cnt = $("#main_form_table table tbody").children().length;
         for(var i=0; i<row_cnt; i++) {
             var affil_id = '#affiliation-user-' + i;
             var check_id = '#take-user-' + i;
