@@ -18,7 +18,7 @@ $(document).ready(function() {
             '<label class="custom-control-label" for="take-user"></label>' +
             '</div>' +
             '</td>' +
-            '<td class="slim-cell col-sm-1">' +
+            '<td class="slim-cell">' +
             '<div class="form-group slim-form-group">' +
             '<input type="text" class="form-control" name="team_id" value="">' +
             '</div>' +

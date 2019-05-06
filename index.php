@@ -278,7 +278,7 @@ B,tsukasa_diary,tsukasa_diary,</code></pre>
                                 echo <<<EOT
 <tr>
     <td class="slim-cell"><div class="custom-control custom-checkbox slim-form-check"><input type="checkbox" class="custom-control-input" name="take_user[{$i}]" checked="checked" id="take-user-{$i}"><label class="custom-control-label" for="take-user-{$i}"></label></div></td>
-    <td class="slim-cell col-sm-1"><div class="form-group slim-form-group"><input type="text" class="form-control" name="team_id[{$i}]" value="{$row[0]}"></div></td>
+    <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="team_id[{$i}]" value="{$row[0]}"></div></td>
     <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="handle[{$i}]" value="{$row[1]}"></div></td>
     <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="user_id[{$i}]" value="{$row[2]}"></div></td>
     <td class="slim-cell"><div class="form-group slim-form-group"><input type="text" class="form-control" name="affiliation[{$i}]" id="affiliation-user-{$i}" value="{$row[3]}"></div></td>
@@ -296,7 +296,7 @@ EOT;
             <label class="custom-control-label" for="take-user-0"></label>
         </div>
     </td>
-    <td class="slim-cell col-sm-1">
+    <td class="slim-cell">
         <div class="form-group slim-form-group">
             <input type="text" class="form-control" name="team_id[0]">
         </div>
