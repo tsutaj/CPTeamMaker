@@ -21,6 +21,5 @@ jobs:
           server-dir: ./compro/cp-teammaker/
           state-name: ./.sync-state/.state_cp-teammaker.json
           dry-run: true
-          exclude:
-            - .gitignore
+          exclude: .gitignore
             
