@@ -19,7 +19,6 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
           server-dir: ./compro/cp-teammaker/
-          dry-run: true
           exclude: .git*
             - .git*/**
             
