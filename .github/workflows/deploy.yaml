@@ -21,4 +21,6 @@ jobs:
           server-dir: ./compro/cp-teammaker/
           dry-run: true
           exclude: .gitignore
-            
+          - .git/*/**
+          - .github/*/**
+          
